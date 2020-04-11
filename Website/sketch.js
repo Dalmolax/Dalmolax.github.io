@@ -16,7 +16,7 @@ function setup() {
     noStroke();
 }
 function mousePressed(){
-    background(0);
+    background(col.b, col.g, col.r);
 
 }
 
