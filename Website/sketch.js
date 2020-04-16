@@ -18,8 +18,8 @@ function setup() {
 
 function draw() {
     background(0);
-    colx = map(xspeed, -20, 20, 20, 255);
-    coly = map(yspeed, -20, 20, 20, 255);
+    colx = map(xspeed, -15, 15, 20, 255);
+    coly = map(yspeed, -15, 15, 20, 255);
     fill(colm, colx, 0);
     text("\"Hello", width / 2.4, height / 20);
     fill(colm, 0, coly);
@@ -28,7 +28,7 @@ function draw() {
     ellipse(x, y, width / 10);
     x = x + xspeed;
     y = y + yspeed;
-    if (xspeed > 20) {
+    if (xspeed > 15) {
         chnx = random(0.8, 0.9)
     }
     if (xspeed < 10) {
@@ -36,7 +36,7 @@ function draw() {
             chnx = random(1.2, 1.3);
         }
     }
-    if (yspeed > 20) {
+    if (yspeed > 15) {
         chny = random(0.7, 0.9)
     }
     if (yspeed < 10) {
