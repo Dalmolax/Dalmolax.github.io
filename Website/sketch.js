@@ -20,7 +20,6 @@ function draw() {
     background(0);
     colx = map(xspeed, -30, 30, 20, 255);
     coly = map(yspeed, -30, 30, 20, 255);
-    colm = (colx + coly) / 2;
     fill(colm, colx, 0);
     text("\"Hello", width / 2.4, height / 20);
     fill(colm, 0, coly);
@@ -35,10 +34,12 @@ function draw() {
     if (xspeed < 10) {
         if (xspeed > 0) {
             chnx = random(1.2, 1.3);
+            colm = random(100, 255);
         }
     }
     if (yspeed > 30) {
         chny = random(0.7, 0.9)
+        colm = random(100, 255);
     }
     if (yspeed < 10) {
         if (yspeed > 0) {
