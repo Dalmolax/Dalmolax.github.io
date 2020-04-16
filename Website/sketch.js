@@ -1,48 +1,70 @@
-//Lesson: Create a random painting
-//Use color gradient, different shapes and sizes
-var rnc = {
-    x1: 0,
-    x2: 255,
-    y1: 0,
-    y2: 255,
-    z1: 0,
-    z2: 255
-};
-var pt = {
-    x: 100,
-    y: 50
-};
-var col = {
-    r: 255,
-    g: 0,
-    b: 0
-};
+//Lesson : Make something nice with the floating ball
+var x = 30;
+var y = 200;
+var xspeed = 0;
+var yspeed = 0;
+var chnx = 1.5;
+var chny = 1.5;
+var colx = 255;
+var coly = 255;
+var colm = 255;
 
 function setup() {
     createCanvas(600, 400);
-    background(0);
-    noStroke();
-}
-
-function mousePressed() {
-    col.b = random(0, 255);
-    col.g = random(0, 255);
-    col.r = random(0, 255);
-    background(col.b, col.g, col.r);
-    rnc.x1 = random(0, 255);
-    rnc.x2 = random(0, 255);
-    rnc.y1 = random(0, 255);
-    rnc.y2 = random(0, 255);
-    rnc.z1 = random(0, 255);
-    rnc.z2 = random(0, 255);
+    xspeed = random(3, 5);
+    yspeed = random(3, 5);
+    textSize(16);
 }
 
 function draw() {
-    pt.x = random(0, width);
-    pt.y = random(0, height);
-    col.b = map(pt.x, 0, width, rnc.x1, rnc.x2);
-    col.g = map(pt.y, 0, height, rnc.y1, rnc.y2);
-    col.r = map(pt.x, 0, height, rnc.z1, rnc.z2);
-    fill(col.r, col.g, col.b);
-    ellipse(pt.x, pt.y, 45);
+    background(0);
+    colx = map(xspeed, -30, 30, 20, 255);
+    coly = map(yspeed, -30, 30, 20, 255);
+    colm = (colx + coly) / 2;
+    fill(colm, colx, 0);
+    text("\"Hello", width / 2.4, height / 20);
+    fill(colm, 0, coly);
+    text("There!\"", width / 2, height / 20);
+    fill(colm, colx, coly);
+    ellipse(x, y, width / 10);
+    x = x + xspeed;
+    y = y + yspeed;
+    if (xspeed > 30) {
+        chnx = random(0.8, 0.9)
+    }
+    if (xspeed < 10) {
+        if (xspeed > 0) {
+            chnx = random(1.2, 1.3);
+        }
+    }
+    if (yspeed > 30) {
+        chny = random(0.7, 0.9)
+    }
+    if (yspeed < 10) {
+        if (yspeed > 0) {
+            chny = random(1.1, 1.3);
+        }
+    }
+    if (x > width - width / 20) {
+        print("Off screen!");
+        x = width - width / 20;
+        xspeed = -1 * xspeed;
+        xspeed = xspeed * chnx;
+    }
+    if (y > height - width / 20) {
+        print("Off screen!");
+        y = height - width / 20;
+        yspeed = -1 * yspeed;
+        yspeed = yspeed * chny;
+    }
+    if (x < width / 20) {
+        x = width / 20;
+        xspeed = -1 * xspeed;
+        xspeed = xspeed * chnx;
+    }
+    if (y < width / 20) {
+        y = width / 20;
+        yspeed = -1 * yspeed;
+        yspeed = yspeed * chny;
+    }
 }
