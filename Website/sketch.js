@@ -14,20 +14,20 @@ function draw() {
     background(0);
     for (let cx = 0; cx <= 11; cx += PI / 6) {
         //fill(127, cx * 30, 127);
-        for (let cy = 65; cy <= 1000; cy += 35) {
+        for (let cy = 65; cy <= 600; cy += 35) {
             //fill(cx * 10 + offs2, cy / 3 + offs3, 255 - cx * 10 + offs4);
             if (cy % 2 === 0) {
                 chn = -1;
-                fill(255 - cx * 10 + offs2, 255 - cy  + offs3, cx * 10 + offs4);
+                fill(255 - cx * 15 + offs4, 255 - cy / 3 + offs3, 255 - cy / 3 + offs2);
             } else {
                 chn = 1;
-                fill(cx * 10 + offs2, cy/3 + offs3, 127 - cy/40 + offs4);
+                fill(cx * 15 + offs4, cy / 3 + offs3, 255 - cy / 3 + offs2);
             }
             ellipse(width / 2 + cos(cx + offs * chn) * cy, height / 2 + sin(cx + offs * chn) * cy, height / 30);
         }
     }
     offs = millis() / 2000;
     offs2 = sin(millis() / 2000) * 30;
-    offs3 = sin(millis() / 1500) * 30;
-    offs4 = sin(millis() / 1000) * 30;
+    offs3 = sin(millis() / 1900) * 30;
+    offs4 = sin(millis() / 1800) * 30;
 }
