@@ -1,33 +1,31 @@
-//Lesson: Create a nested loop, making a cool pattern with it. Maybe try to animate?
-var offs = 0;
-var offs2 = 0;
-var offs3 = 0;
-var offs4 = 0;
-var chn = 0;
-
+//Lesson: Make a drawing, maybe a landscape
 function setup() {
-    createCanvas(600, 950);
-    background(0);
+    createCanvas(800, 450);
+    noStroke();
+    sunColor = color(255);
+    fadesunColor = color(255);
+    fadesunColor.setAlpha(75);
+    fadesunColor2 = color(255);
+    fadesunColor2.setAlpha(35);
+    mountainColor = color('#007869');
 }
 
 function draw() {
-    background(0);
-    for (let cx = 0; cx <= 11; cx += PI / 6) {
-        //fill(127, cx * 30, 127);
-        for (let cy = 65; cy <= 600; cy += 35) {
-            //fill(cx * 10 + offs2, cy / 3 + offs3, 255 - cx * 10 + offs4);
-            if (cy % 2 === 0) {
-                chn = -1;
-                fill(255 - cx * 15 + offs4, 255 - cy / 3 + offs3, 255 - cy / 3 + offs2);
-            } else {
-                chn = 1;
-                fill(cx * 15 + offs4, cy / 3 + offs3, 255 - cy / 3 + offs2);
-            }
-            ellipse(width / 2 + cos(cx + offs * chn) * cy, height / 2 + sin(cx + offs * chn) * cy, height / 30);
-        }
-    }
-    offs = millis() / 2000;
-    offs2 = sin(millis() / 2000) * 30;
-    offs3 = sin(millis() / 1900) * 30;
-    offs4 = sin(millis() / 1800) * 30;
+    background('#9ae3e9');
+    //arvores
+    //triangle(width, height, width/2, height, (width/1.33) * (1 + sin(millis()/1000)/100), height/3);
+    fill(sunColor);
+    ellipse(width / 4, height / 3, 100);
+    fill(fadesunColor);
+    ellipse(width / 4, height / 3, 150);
+    fill(fadesunColor2);
+    ellipse(width / 4, height / 3, 200);
+    fill(mountainColor);
+    triangle(width, height, width / 2, height, width / 1.33, height / 3);
+    triangle(width / 1.3, height, width / 3, height, width / 1.7, height / 2.7);
+    fill('#6ec370');
+    ellipse(width / 2, height / 1.1, width * 1.1, height / 1.7);
+    fill('#519b50');
+    ellipse(width / 2, height / 1.1, width * 1.1, height / 2);
+
 }

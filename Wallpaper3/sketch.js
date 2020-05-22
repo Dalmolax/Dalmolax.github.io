@@ -1,33 +1,49 @@
-//Lesson: Create a nested loop, making a cool pattern with it. Maybe try to animate?
-var offs = 0;
-var offs2 = 0;
-var offs3 = 0;
-var offs4 = 0;
-var chn = 0;
+//Lesson: Create a random painting
+//Use color gradient, different shapes and sizes
+var rnc = {
+    x1: 0,
+    x2: 255,
+    y1: 0,
+    y2: 255,
+    z1: 0,
+    z2: 255
+};
+var pt = {
+    x: 100,
+    y: 50
+};
+var col = {
+    r: 255,
+    g: 0,
+    b: 0
+};
 
 function setup() {
-    createCanvas(600, 950);
+    createCanvas(600, 1000);
+    //createCanvas(1600, 900);
     background(0);
+    noStroke();
+}
+
+function mousePressed() {
+    col.b = random(0, 255);
+    col.g = random(0, 255);
+    col.r = random(0, 255);
+    background(col.b, col.g, col.r);
+    rnc.x1 = random(0, 255);
+    rnc.x2 = random(0, 255);
+    rnc.y1 = random(0, 255);
+    rnc.y2 = random(0, 255);
+    rnc.z1 = random(0, 255);
+    rnc.z2 = random(0, 255);
 }
 
 function draw() {
-    background(0);
-    for (let cx = 0; cx <= 11; cx += PI / 6) {
-        //fill(127, cx * 30, 127);
-        for (let cy = 65; cy <= 600; cy += 35) {
-            //fill(cx * 10 + offs2, cy / 3 + offs3, 255 - cx * 10 + offs4);
-            if (cy % 2 === 0) {
-                chn = -1;
-                fill(255 - cx * 15 + offs4, 255 - cy / 3 + offs3, 255 - cy / 3 + offs2);
-            } else {
-                chn = 1;
-                fill(cx * 15 + offs4, cy / 3 + offs3, 255 - cy / 3 + offs2);
-            }
-            ellipse(width / 2 + cos(cx + offs * chn) * cy, height / 2 + sin(cx + offs * chn) * cy, height / 30);
-        }
-    }
-    offs = millis() / 2000;
-    offs2 = sin(millis() / 2000) * 30;
-    offs3 = sin(millis() / 1900) * 30;
-    offs4 = sin(millis() / 1800) * 30;
+    pt.x = random(0, width);
+    pt.y = random(0, height);
+    col.b = map(pt.x, 0, width, rnc.x1, rnc.x2);
+    col.g = map(pt.y, 0, height, rnc.y1, rnc.y2);
+    col.r = map(pt.x, 0, height, rnc.z1, rnc.z2);
+    fill(col.r, col.g, col.b);
+    ellipse(pt.x, pt.y, width / 10);
 }
