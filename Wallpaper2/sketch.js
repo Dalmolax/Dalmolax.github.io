@@ -17,7 +17,8 @@ function setup() {
     createCanvas(600, 950);
     xspeed = random(5, 10);
     yspeed = random(5, 10);
-    textSize(16);
+    //textSize(16);
+    background(0);
 }
 function mouseClicked(){
     rnd = random(0, 255);
