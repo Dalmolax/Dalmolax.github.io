@@ -1,5 +1,5 @@
 let squares = [];
-
+var tim = 0;
 var COLORS = ['#69D2E7', '#27DBD8', '#50E46C', '#3386FF', '#FA69FA', '#FF4E50', '#F9D423'];
 
 function setup() {
@@ -13,7 +13,6 @@ function setup() {
         }
     }
 }
-
 function mouseDragged() {
     for (let i = 0; i < squares.length; i++) {
         if (squares[i].contains(mouseX, mouseY)) {
@@ -21,24 +20,32 @@ function mouseDragged() {
         }
     }
 }
-
 function mouseClicked() {
-    for (let i = 0; i < squares.length; i++) {
-        squares[i].randomColor(); 
+    if (tim == 0) {
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].randomColor();
+            //setTimeout(() => {  squares[i].randomColor(); }, 2000);
+        }
+        tim = 1;
+    } else {
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].clearColor();
+            //setTimeout(() => {  squares[i].randomColor(); }, 2000);
+        }
+        tim = 0;
     }
 }
-
 function draw() {
     background(0);
     stroke(255);
     strokeWeight(2);
-    for (let i = 0; i < squares.length; i++) {
-        if (squares[i].contains(mouseX, mouseY)) {
-            //squares[i].changeColor(255);
-        } else {
-            //squares[i].changeColor(0);
-        }
-    }
+    // for (let i = 0; i < squares.length; i++) {
+    //     if (squares[i].contains(mouseX, mouseY)) {
+    //         //squares[i].changeColor(255);
+    //     } else {
+    //         //squares[i].changeColor(0);
+    //     }
+    // }
     //Horizontal Lines
     for (let i = 0; i < 35; i++) {
         line(0, i * 30 + 1, width, i * 30 + 1);
@@ -46,12 +53,10 @@ function draw() {
     //Vertical Lines
     for (let i = 0; i < 35; i++) {
         line(i * 30 + 2, 0, i * 30 + 2, height);
-
     }
     for (let i = 0; i < squares.length; i++) {
         squares[i].show();
         squares[i].move();
-
     }
 }
 class Square {
@@ -64,6 +69,12 @@ class Square {
     }
     randomColor() {
         this.color = random(COLORS);
+    }
+    clearColor() {
+        this.color = 0;
+    }
+    changeColor(col) {
+        this.color = col;
     }
     move() {
 
