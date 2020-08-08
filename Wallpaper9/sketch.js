@@ -1,33 +1,37 @@
-//Lesson: Create a nested loop, making a cool pattern with it. Maybe try to animate?
-var offs = 0;
-var offs2 = 0;
-var offs3 = 0;
-var offs4 = 0;
-var chn = 0;
+//Create a little galaxy
+let planets = [];
 
 function setup() {
     createCanvas(600, 950);
-    background(0);
+    let x = width / 2;
+    let y = height / 2;
+    let r = 50;
+    let m = 1;
+    let c = "#ff9b6a"
+    let p = new Planet(x, y, r, m, c);
+    planets.push(p);
+    print(planets);
 }
 
 function draw() {
     background(0);
-    for (let cx = 0; cx <= 11; cx += PI / 6) {
-        //fill(127, cx * 30, 127);
-        for (let cy = 65; cy <= 600; cy += 35) {
-            //fill(cx * 10 + offs2, cy / 3 + offs3, 255 - cx * 10 + offs4);
-            if (cy % 2 === 0) {
-                chn = -1;
-                fill(255 - cx * 15 + offs4, 255 - cy / 3 + offs3, 255 - cy / 3 + offs2);
-            } else {
-                chn = 1;
-                fill(cx * 15 + offs4, cy / 3 + offs3, 255 - cy / 3 + offs2);
-            }
-            ellipse(width / 2 + cos(cx + offs * chn) * cy, height / 2 + sin(cx + offs * chn) * cy, height / 30);
-        }
+    for (let i = 0; i < planets.length; i++) {
+        planets[i].show();
     }
-    offs = millis() / 2000;
-    offs2 = sin(millis() / 2000) * 30;
-    offs3 = sin(millis() / 1900) * 30;
-    offs4 = sin(millis() / 1800) * 30;
+
+}
+
+class Planet {
+    constructor(x, y, r, m, c) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.m = m;
+        this.c = c;
+    }
+    show() {
+        noStroke();
+        fill(this.c);
+        ellipse(this.x, this.y, this.r);
+    }
 }
