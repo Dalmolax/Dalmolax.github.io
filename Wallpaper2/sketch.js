@@ -14,7 +14,8 @@ var rnd = 0;
 var rnd1 = 0;
 var rnd2 = 0;
 function setup() {
-    createCanvas(600, 950);
+    //createCanvas(600, 950);
+    createCanvas(windowWidth, windowHeight);
     xspeed = random(5, 10);
     yspeed = random(5, 10);
     //textSize(16);
