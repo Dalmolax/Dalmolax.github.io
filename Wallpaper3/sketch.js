@@ -46,5 +46,5 @@ function draw() {
     col.g = map(pt.y, 0, height, rnc.y1, rnc.y2);
     col.r = map(pt.x, 0, height, rnc.z1, rnc.z2);
     fill(col.r, col.g, col.b);
-    ellipse(pt.x, pt.y, width / 10);
+    ellipse(pt.x, pt.y, width / 20);
 }
