@@ -19,7 +19,8 @@ var col = {
 };
 
 function setup() {
-    createCanvas(600, 1000);
+    //createCanvas(600, 1000);
+    createCanvas(windowWidth, windowHeight);
     //createCanvas(1600, 900);
     background(0);
     noStroke();
