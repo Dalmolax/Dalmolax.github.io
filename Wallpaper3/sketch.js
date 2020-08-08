@@ -19,9 +19,8 @@ var col = {
 };
 
 function setup() {
-    //createCanvas(600, 1000);
-    createCanvas(windowWidth, windowHeight);
-    //createCanvas(1600, 900);
+    createCanvas(600, 1000);
+    //createCanvas(windowWidth, windowHeight);
     background(0);
     noStroke();
 }
@@ -46,5 +45,5 @@ function draw() {
     col.g = map(pt.y, 0, height, rnc.y1, rnc.y2);
     col.r = map(pt.x, 0, height, rnc.z1, rnc.z2);
     fill(col.r, col.g, col.b);
-    ellipse(pt.x, pt.y, width / 20);
+    ellipse(pt.x, pt.y, width / 10);
 }
