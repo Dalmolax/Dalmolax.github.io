@@ -14,8 +14,8 @@ var rnd = 0;
 var rnd1 = 0;
 var rnd2 = 0;
 function setup() {
-    //createCanvas(600, 950);
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(600, 950);
+    //createCanvas(windowWidth, windowHeight);
     xspeed = random(5, 10);
     yspeed = random(5, 10);
     //textSize(16);
@@ -37,10 +37,10 @@ function draw() {
     // fill(colm, 0, coly);
     // text("There!\"", width / 2, height / 20);
     fill(colm, colx, coly);
-    ellipse(x, y, width / 20);
-    ellipse(xn, y, width / 20);
-    ellipse(x, yn, width / 20);
-    ellipse(xn, yn, width / 20);
+    ellipse(x, y, width / 10);
+    ellipse(xn, y, width / 10);
+    ellipse(x, yn, width / 10);
+    ellipse(xn, yn, width / 10);
     xn = width - x;
     x = x + xspeed;
     yn = height - y;
