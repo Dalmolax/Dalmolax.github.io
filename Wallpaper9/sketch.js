@@ -10,12 +10,12 @@ function setup() {
 
 function draw() {
     background(0);
-    fill("#ff8000");
-    stroke("#ffa448");
-    strokeWeight(2);
-    ellipse(width/4, height/4, 40);
-    noFill();
-    stroke(255);
+    // fill("#ff8000");
+    // stroke("#ffa448");
+    // strokeWeight(2);
+    // ellipse(width/4, height/4, 40);
+    // noFill();
+    // stroke(255);
     //ellipse(width/2, height/2, 200*1.2,200);
     for (let i = 0; i < planets.length; i++) {
         planets[i].show();
