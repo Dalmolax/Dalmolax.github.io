@@ -71,7 +71,7 @@ class Star {
 function createEarth() {
     let x = width / 2;
     let y = height / 2;
-    let r = 80;
+    let r = 120;
     let d = 0;
     let c = "#0080c0";
     let p = new Planet(x, y, r, d, c);
@@ -81,8 +81,8 @@ function createEarth() {
 function createMoon() {
     let x = width / 2;
     let y = height / 2;
-    let r = 25;
-    let d = 125;
+    let r = 40; 
+    let d = 150;
     let c = "#c0c0c0";
     let p = new Planet(x, y, r, d, c);
     planets.push(p);
