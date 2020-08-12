@@ -1,6 +1,8 @@
 //Create a little solar system
 let planets = [];
 let stars = [];
+let earth;
+let moon;
 
 function setup() {
     createCanvas(600, 950);
@@ -32,19 +34,21 @@ function mouseClicked() {
 }
 
 class Planet {
-    constructor(x, y, r, d, c) {
+    constructor(x, y, r, d, c, t) {
         this.x = x;
         this.y = y;
         this.r = r;
         this.d = d;
         this.c = c;
+        this.t = t;
     }
     show() {
         //noStroke();
         fill(this.c);
         this.x = width / 2 + this.d * sin(millis() / 4000);
         this.y = height / 2 - this.d * cos(millis() / 4000);
-        ellipse(this.x, this.y, this.r);
+        //ellipse(this.x, this.y, this.r);
+        image(this.t, this.x - this.r / 2, this.y - this.r / 2, this.r, this.r);
     }
 }
 class Star {
@@ -74,17 +78,19 @@ function createEarth() {
     let r = 120;
     let d = 0;
     let c = "#0080c0";
-    let p = new Planet(x, y, r, d, c);
+    let t = earth;
+    let p = new Planet(x, y, r, d, c, t);
     planets.push(p);
 }
 
 function createMoon() {
     let x = width / 2;
     let y = height / 2;
-    let r = 40; 
+    let r = 40;
     let d = 150;
     let c = "#c0c0c0";
-    let p = new Planet(x, y, r, d, c);
+    let t = moon;
+    let p = new Planet(x, y, r, d, c, t);
     planets.push(p);
 }
 
@@ -99,4 +105,9 @@ function createStars() {
         stars.push(p);
     }
 
+}
+
+function preload() {
+    earth = loadImage("littleEarth.png");
+    moon = loadImage("littleMoon.png");
 }
