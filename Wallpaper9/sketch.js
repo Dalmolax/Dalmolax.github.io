@@ -42,8 +42,11 @@ class Planet {
     show() {
         //noStroke();
         fill(this.c);
-        this.x = width / 2 + this.d * sin(millis() / 4000);
-        this.y = height / 2 - this.d * cos(millis() / 4000);
+        if (this.t == moon) {
+            this.x = width / 2 + this.d * sin(millis() / 4000);
+            this.y = height / 2 - this.d * cos(millis() / 4000);
+        }
+
         //ellipse(this.x, this.y, this.r);
         image(this.t, this.x - this.r / 2, this.y - this.r / 2, this.r, this.r);
     }
