@@ -3,24 +3,21 @@ let planets = [];
 let stars = [];
 let earth;
 let moon;
+let blueStar;
+let greenStar;
+let star1;
+let star2;
+let star3;
 
 function setup() {
     createCanvas(600, 950);
     createEarth();
     createMoon();
     createStars();
-    //print(planets);
 }
 
 function draw() {
     background(0);
-    // fill("#ff8000");
-    // stroke("#ffa448");
-    // strokeWeight(2);
-    // ellipse(width/4, height/4, 40);
-    // noFill();
-    // stroke(255);
-    //ellipse(width/2, height/2, 200*1.2,200);
     for (let i = 0; i < stars.length; i++) {
         stars[i].show();
     }
@@ -52,23 +49,34 @@ class Planet {
     }
 }
 class Star {
-    constructor(x, y, r, c, hu) {
+    constructor(x, y, r, c, im, ty) {
         this.x = x;
         this.y = y;
         this.r = r;
         this.c = c;
-        this.hu = hu;
+        this.im = im;
+        this.ty = ty;
     }
     show() {
-        noStroke();
-        if (this.i < 1000) {
-            this.i = this.i + random(0, 30);
-        } else {
-            this.hu = random(100, 200);
-            this.i = 0;
+        //nostroke();
+        this.i = int(random(0, 300));
+        if (this.i == 1) {
+            if (this.ty == "white") {
+                this.im = star1;
+            }
         }
-        fill(this.c, this.hu);
-        ellipse(this.x, this.y, this.r);
+        if (this.i == 2) {
+            if (this.ty == "white") {
+                this.im = star2;
+            }
+        }
+        if (this.i == 3) {
+            if (this.ty == "white") {
+                this.im = star3;
+            }
+        }
+        //ellipse(this.x, this.y, this.r); 
+        image(this.im, this.x - this.r / 2, this.y - this.r / 2, this.r, this.r);
     }
 }
 
@@ -100,14 +108,39 @@ function createStars() {
         let y = random(height);
         let r = random(1, 5);
         let c = 255;
-        let hu = random(0, 255);
-        let p = new Star(x, y, r, c, hu);
+        let im = star1;
+        let ty = "white";
+        let p = new Star(x, y, r, c, im, ty);
         stars.push(p);
     }
-
+    for (let i = 0; i < 2; i++) {
+        let x = random(width);
+        let y = random(height);
+        let r = random(10, 30);
+        let c = 255;
+        let im = blueStar;
+        let ty = "blue";
+        let p = new Star(x, y, r, c, im, ty);
+        stars.push(p);
+    }
+    for (let i = 0; i < 2; i++) {
+        let x = random(width);
+        let y = random(height);
+        let r = random(20, 40);
+        let c = 255;
+        let im = yellowStar;
+        let ty = "yellow";
+        let p = new Star(x, y, r, c, im, ty);
+        stars.push(p);
+    }
 }
 
 function preload() {
     earth = loadImage("littleEarth.png");
     moon = loadImage("littleMoon.png");
+    star1 = loadImage("star1.png");
+    star2 = loadImage("star2.png");
+    star3 = loadImage("star3.png");
+    blueStar = loadImage("blueStar.png");
+    yellowStar = loadImage("yellowStar.png");
 }
