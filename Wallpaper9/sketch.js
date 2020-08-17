@@ -12,6 +12,7 @@ let star2;
 let star3;
 let cometdata;
 let cometsheet;
+let chk = 0;
 
 function setup() {
     createCanvas(600, 950);
@@ -154,20 +155,20 @@ function createStars() {
         let p = new Star(x, y, r, c, im, ty);
         stars.push(p);
     }
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < random(0, 4); i++) {
         let x = random(width);
         let y = random(height);
-        let r = random(10, 30);
+        let r = random(10, 40);
         let c = 255;
         let im = blueStar;
         let ty = "blue";
         let p = new Star(x, y, r, c, im, ty);
         stars.push(p);
     }
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < random(0, 4); i++) {
         let x = random(width);
         let y = random(height);
-        let r = random(20, 40);
+        let r = random(10, 40);
         let c = 255;
         let im = yellowStar;
         let ty = "yellow";
@@ -177,25 +178,29 @@ function createStars() {
 }
 
 function createComet() {
-    let frames = cometdata.frames;
-    for (let i = 0; i < frames.length; i++) {
-        let pos = frames[i].frame;
-        let img = cometsheet.get(pos.x, pos.y, pos.w, pos.h);
-        animation.push(img);
+    if (chk == 0) {
+        let frames = cometdata.frames;
+        for (let i = 0; i < frames.length; i++) {
+            let pos = frames[i].frame;
+            let img = cometsheet.get(pos.x, pos.y, pos.w, pos.h);
+            animation.push(img);
+        }
+        chk = 1;
     }
-    for (let i = 0; i < 5; i++) {
-        comets[i] = new Sprite(animation, random(width), random(height), 0.2);
+    for (let i = 0; i < random(0, 10); i++) {
+        let p = new Sprite(animation, random(width), random(height), 0.2);
+        comets.push(p)
     }
 }
 
 function preload() {
-    earth = loadImage("littleEarth.png");
-    moon = loadImage("littleMoon.png");
-    star1 = loadImage("star1.png");
-    star2 = loadImage("star2.png");
-    star3 = loadImage("star3.png");
-    blueStar = loadImage("blueStar.png");
-    yellowStar = loadImage("yellowStar.png");
-    cometdata = loadJSON("comet.json");
-    cometsheet = loadImage("comet.png");
+    earth = loadImage("resources/littleEarth.png");
+    moon = loadImage("resources/littleMoon.png");
+    star1 = loadImage("resources/star1.png");
+    star2 = loadImage("resources/star2.png");
+    star3 = loadImage("resources/star3.png");
+    blueStar = loadImage("resources/blueStar.png");
+    yellowStar = loadImage("resources/yellowStar.png");
+    cometdata = loadJSON("resources/comet.json");
+    cometsheet = loadImage("resources/comet.png");
 }
