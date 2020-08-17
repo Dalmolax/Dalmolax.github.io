@@ -1,0 +1,108 @@
+{ "frames": [
+   {
+    "filename": "comet-0",
+    "frame": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-1",
+    "frame": { "x": 15, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-2",
+    "frame": { "x": 30, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-3",
+    "frame": { "x": 45, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-4",
+    "frame": { "x": 60, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-5",
+    "frame": { "x": 75, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-6",
+    "frame": { "x": 90, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-7",
+    "frame": { "x": 105, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-8",
+    "frame": { "x": 120, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   },
+   {
+    "filename": "comet-9",
+    "frame": { "x": 135, "y": 0, "w": 15, "h": 15 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 15, "h": 15 },
+    "sourceSize": { "w": 15, "h": 15 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.23-dev",
+  "image": "comet.png",
+  "format": "RGBA8888",
+  "size": { "w": 150, "h": 15 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
