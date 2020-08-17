@@ -1,4 +1,4 @@
-//Create a little solar system
+//Create a little galaxy
 let planets = [];
 let stars = [];
 let comets = [];
@@ -145,7 +145,7 @@ function createMoon() {
 }
 
 function createStars() {
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 300; i++) {
         let x = random(width);
         let y = random(height);
         let r = random(1, 5);
@@ -155,7 +155,7 @@ function createStars() {
         let p = new Star(x, y, r, c, im, ty);
         stars.push(p);
     }
-    for (let i = 0; i < random(0, 4); i++) {
+    for (let i = 0; i < random(3, 8); i++) {
         let x = random(width);
         let y = random(height);
         let r = random(10, 40);
@@ -165,7 +165,7 @@ function createStars() {
         let p = new Star(x, y, r, c, im, ty);
         stars.push(p);
     }
-    for (let i = 0; i < random(0, 4); i++) {
+    for (let i = 0; i < random(3, 8); i++) {
         let x = random(width);
         let y = random(height);
         let r = random(10, 40);
@@ -187,7 +187,7 @@ function createComet() {
         }
         chk = 1;
     }
-    for (let i = 0; i < random(0, 10); i++) {
+    for (let i = 0; i < random(10, 20); i++) {
         let p = new Sprite(animation, random(width), random(height), 0.2);
         comets.push(p)
     }
