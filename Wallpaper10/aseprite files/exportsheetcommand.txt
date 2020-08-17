@@ -1,0 +1,1 @@
+aseprite.exe -b .\comet.aseprite --scale 2 --sheet comet.png --data comet.json --format json-array
