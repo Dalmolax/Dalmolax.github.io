@@ -104,7 +104,7 @@ class Sprite {
     }
     show() {
         let i = floor(this.i) % this.len;
-        image(this.animation[i], this.x, this.y);
+        image(this.animation[i], this.x, this.y, 30, 30);
     }
     animate() {
         //this.rnd = int(random(0, 30));
