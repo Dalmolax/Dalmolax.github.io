@@ -15,7 +15,8 @@ let cometsheet;
 let chk = 0;
 
 function setup() {
-    createCanvas(600, 950);
+    //createCanvas(600, 950);
+    createCanvas(windowWidth, windowHeight);
     createComet();
     createEarth();
     createMoon();

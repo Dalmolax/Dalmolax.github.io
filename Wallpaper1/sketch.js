@@ -6,8 +6,8 @@ var offs4 = 0;
 var chn = 0;
 
 function setup() {
-    createCanvas(600, 950);
-    //createCanvas(windowWidth, windowHeight);
+    //createCanvas(600, 950);
+    createCanvas(windowWidth, windowHeight);
     background(0);
 }
 

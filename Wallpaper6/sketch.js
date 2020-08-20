@@ -1,7 +1,8 @@
 let bubbles = [];
 
 function setup() {
-    createCanvas(600, 950);
+    //createCanvas(600, 950);
+    createCanvas(windowWidth, windowHeight);
 }
 
 function mousePressed() {
