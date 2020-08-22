@@ -13,6 +13,7 @@ let star3;
 let cometdata;
 let cometsheet;
 let chk = 0;
+let vari = 0;
 
 function setup() {
     //createCanvas(600, 950);
@@ -38,7 +39,8 @@ function draw() {
 }
 
 function mouseClicked() {
-    setup();
+    createStars();
+    createComet();
 }
 
 class Planet {
@@ -53,9 +55,10 @@ class Planet {
     show() {
         //noStroke();
         fill(this.c);
+        vari = millis() / 5000;
         if (this.t == moon) {
-            this.x = width / 2 + this.d * sin(millis() / 4000);
-            this.y = height / 2 - this.d * cos(millis() / 4000);
+            translate(width / 2, height / 2);
+            rotate(vari);
         }
         //ellipse(this.x, this.y, this.r);
         image(this.t, this.x - this.r / 2, this.y - this.r / 2, this.r, this.r);
@@ -135,8 +138,8 @@ function createEarth() {
 }
 
 function createMoon() {
-    let x = width / 2;
-    let y = height / 2;
+    let x = 0;
+    let y = -150;
     let r = 40;
     let d = 150;
     let c = "#c0c0c0";

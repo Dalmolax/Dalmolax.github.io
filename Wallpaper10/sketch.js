@@ -58,7 +58,7 @@ class Planet {
         vari = millis() / 5000;
         if (this.t == moon) {
             translate(width / 2, height / 2);
-            rotate(vari)
+            rotate(vari);
         }
         //ellipse(this.x, this.y, this.r);
         image(this.t, this.x - this.r / 2, this.y - this.r / 2, this.r, this.r);
