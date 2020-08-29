@@ -1,4 +1,4 @@
-//Create a little solar system
+//Create a little earth
 let planets = [];
 let stars = [];
 let comets = [];
@@ -14,10 +14,11 @@ let cometdata;
 let cometsheet;
 let chk = 0;
 let vari = 0;
+let frmr = 30; //starting FPS
 
 function setup() {
-    //createCanvas(600, 950);
     createCanvas(windowWidth, windowHeight);
+    frameRate(frmr);
     createComet();
     createEarth();
     createMoon();
@@ -26,15 +27,16 @@ function setup() {
 
 function draw() {
     background(0);
+    translate(0, 0);
     for (let i = 0; i < stars.length; i++) {
         stars[i].show();
-    }
-    for (let i = 0; i < planets.length; i++) {
-        planets[i].show();
     }
     for (let i = 0; i < comets.length; i++) {
         comets[i].show();
         comets[i].animate();
+    }
+    for (let i = 0; i < planets.length; i++) {
+        planets[i].show();
     }
 }
 
