@@ -14,9 +14,11 @@ let cometdata;
 let cometsheet;
 let chk = 0;
 let vari = 0;
+let frmr = 30; //starting FPS
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    frameRate(frmr);
     createComet();
     createEarth();
     createMoon();
@@ -29,12 +31,12 @@ function draw() {
     for (let i = 0; i < stars.length; i++) {
         stars[i].show();
     }
-    for (let i = 0; i < planets.length; i++) {
-        planets[i].show();
-    }
     for (let i = 0; i < comets.length; i++) {
         comets[i].show();
         comets[i].animate();
+    }
+    for (let i = 0; i < planets.length; i++) {
+        planets[i].show();
     }
 }
 
