@@ -1,15 +1,32 @@
-let angle = 0;
-let frmr = 30;
+let sz;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
-    frameRate(30);
+    createCanvas(960, 540);
+    noStroke();
+    sz = 74;
+    imageMode(CENTER);
+    frameRate(10);
 }
 
 function draw() {
+    translate(width / 2, height / 2);
     background(0);
-    ortho(-windowWidth, windowWidth, windowHeight, -windowHeight, 0, 1500);
-    rotateX(QUARTER_PI*millis()/1000);
-    rotateY(QUARTER_PI*millis()/1000);
-    box(windowWidth, windowHeight, (windowHeight+windowWidth)/2)
+    for (let i = 0; i < 14; i++) {
+        for (let ii = 0; ii < 8; ii++) {
+            image(base, -width / 2 + i * sz, -height / 2 + ii * sz, sz, sz);
+            if (i < 10 && i >= 4) {
+                if (ii < 6 && ii >= 2) {
+                    image(simpleLeaves, -width / 2 + i * sz, -height / 2 + ii * sz, sz, sz);
+                }
+            }
+        }
+    }
+}
+
+function preload() {
+    base = loadImage("resources/grassTiles1.png");
+    simpleLeaves = loadImage("resources/grassTiles2.png");
+    lushLeaves = loadImage("resources/grassTiles3.png");
+    flowers1 = loadImage("resources/grassTiles4.png");
+    flowers2 = loadImage("resources/grassTiles5.png");
 }
