@@ -1,278 +1,360 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+import {bird} from "./bird.js";
+import {ffnet} from "./ffnet.js";
+import {pipe} from "./pipe.js";
+import {population} from "./population.js"
 
-import {player} from './player.js';
-import {world} from './world.js';
-import {background} from './background.js';
+const _GRAVITY = 900;
+const _TERMINAL_VELOCITY = 400;
+const _MAX_UPWARDS_VELOCITY = -300;
+const _UPWARDS_ACCELERATION = -450;
+const _PIPE_SPACING_X = 250;
+const _PIPE_SPACING_Y = 100;
+const _TREADMILL_SPEED = -125;
 
-
-
-const _VS = `
-varying vec3 vWorldPosition;
-void main() {
-  vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-  vWorldPosition = worldPosition.xyz;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}`;
-
-
-  const _FS = `
-uniform vec3 topColor;
-uniform vec3 bottomColor;
-uniform float offset;
-uniform float exponent;
-varying vec3 vWorldPosition;
-void main() {
-  float h = normalize( vWorldPosition + offset ).y;
-  gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
-}`;
+const _CONFIG_WIDTH = 960;
+const _CONFIG_HEIGHT = 540;
+const _GROUND_Y = _CONFIG_HEIGHT;
+const _BIRD_POS_X = 50;
 
 
-const _PCSS = `
-#define LIGHT_WORLD_SIZE 0.05
-#define LIGHT_FRUSTUM_WIDTH 3.75
-#define LIGHT_SIZE_UV (LIGHT_WORLD_SIZE / LIGHT_FRUSTUM_WIDTH)
-#define NEAR_PLANE 1.0
+class FlappyBirdGame {
+  constructor() {
+    this._game = this._CreateGame();
+    this._previousFrame = null;
+    this._gameOver = true;
 
-#define NUM_SAMPLES 17
-#define NUM_RINGS 11
-#define BLOCKER_SEARCH_NUM_SAMPLES NUM_SAMPLES
-#define PCF_NUM_SAMPLES NUM_SAMPLES
+    this._statsText1 = null;
+    this._statsText2 = null;
+    this._gameOverText = null;
+    this._pipes = [];
+    this._birds = [];
 
-vec2 poissonDisk[NUM_SAMPLES];
-
-void initPoissonSamples( const in vec2 randomSeed ) {
-  float ANGLE_STEP = PI2 * float( NUM_RINGS ) / float( NUM_SAMPLES );
-  float INV_NUM_SAMPLES = 1.0 / float( NUM_SAMPLES );
-
-  // jsfiddle that shows sample pattern: https://jsfiddle.net/a16ff1p7/
-  float angle = rand( randomSeed ) * PI2;
-  float radius = INV_NUM_SAMPLES;
-  float radiusStep = radius;
-
-  for( int i = 0; i < NUM_SAMPLES; i ++ ) {
-    poissonDisk[i] = vec2( cos( angle ), sin( angle ) ) * pow( radius, 0.75 );
-    radius += radiusStep;
-    angle += ANGLE_STEP;
+    this._InitPopulations();
   }
-}
 
-float penumbraSize( const in float zReceiver, const in float zBlocker ) { // Parallel plane estimation
-  return (zReceiver - zBlocker) / zBlocker;
-}
+  _InitPopulations() {
+    const NN_DEF1 = [
+        {size: 7},
+        {size: 5, activation: ffnet.relu},
+        {size: 1, activation: ffnet.sigmoid}
+    ];
 
-float findBlocker( sampler2D shadowMap, const in vec2 uv, const in float zReceiver ) {
-  // This uses similar triangles to compute what
-  // area of the shadow map we should search
-  float searchRadius = LIGHT_SIZE_UV * ( zReceiver - NEAR_PLANE ) / zReceiver;
-  float blockerDepthSum = 0.0;
-  int numBlockers = 0;
+    const NN_DEF2 = [
+        {size: 7},
+        {size: 9, activation: ffnet.relu},
+        {size: 1, activation: ffnet.sigmoid}
+    ];
 
-  for( int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++ ) {
-    float shadowMapDepth = unpackRGBAToDepth(texture2D(shadowMap, uv + poissonDisk[i] * searchRadius));
-    if ( shadowMapDepth < zReceiver ) {
-      blockerDepthSum += shadowMapDepth;
-      numBlockers ++;
+    const NN_DEF3 = [
+        {size: 7},
+        {size: 9, activation: ffnet.relu},
+        {size: 9, activation: ffnet.relu},
+        {size: 1, activation: ffnet.sigmoid}
+    ];
+
+    this._populations = [
+      this._CreatePopulation(100, NN_DEF1, 0xFF0000),
+      this._CreatePopulation(100, NN_DEF2, 0x0000FF),
+      this._CreatePopulation(100, NN_DEF3, 0x00FF00),
+    ];
+  }
+
+  _CreatePopulation(sz, shapes, colour) {
+    const t = new ffnet.FFNeuralNetwork(shapes);
+
+    const params = {
+      population_size: sz,
+      genotype: {
+        size: t.toArray().length,
+      },
+      mutation: {
+        magnitude: 0.1,
+        odds: 0.1,
+        decay: 0,
+      },
+      breed: {
+        selectionCutoff: 0.2,
+        immortalityCutoff: 0.05,
+        childrenPercentage: 0.5,
+      },
+      shapes: shapes,
+      tint: colour,
+    };
+
+    return new population.Population(params);
+  }
+
+  _Destroy() {
+    for (let b of this._birds) {
+      b.Destroy();
+    }
+    for (let p of this._pipes) {
+      p.Destroy();
+    }
+    this._statsText1.destroy();
+    this._statsText2.destroy();
+    if (this._gameOverText !== null) {
+      this._gameOverText.destroy();
+    }
+    this._birds = [];
+    this._pipes = [];
+    this._previousFrame = null;
+  }
+
+  _Init() {
+    for (let i = 0; i < 5; i+=1) {
+      this._pipes.push(
+          new pipe.PipePairObject({
+            scene: this._scene,
+            x: 500 + i * _PIPE_SPACING_X,
+            spacing: _PIPE_SPACING_Y,
+            speed: _TREADMILL_SPEED,
+            config_height: _CONFIG_HEIGHT
+          }));
+    }
+
+    this._gameOver = false;
+    this._stats = {
+      alive: 0,
+      score: 0,
+    };
+
+    const style = {
+      font: "40px Roboto",
+      fill: "#FFFFFF",
+      align: "right",
+      fixedWidth: 210,
+      shadow: {
+        offsetX: 2,
+        offsetY: 2,
+        color: "#000",
+        blur: 2,
+        fill: true
+      }
+    };
+    this._statsText1 = this._scene.add.text(0, 0, '', style);
+
+    style.align = 'left';
+    this._statsText2 = this._scene.add.text(
+        this._statsText1.width + 10, 0, '', style);
+
+    this._birds = [];
+    for (let curPop of this._populations) {
+      curPop.Step();
+
+      this._birds.push(...curPop._population.map(
+          p => new bird.FlappyBird_NeuralNet(
+              {
+                scene: this._scene,
+                pop_entity: p,
+                pop_params: curPop._params,
+                x: _BIRD_POS_X,
+                config_width: _CONFIG_WIDTH,
+                config_height: _CONFIG_HEIGHT,
+                max_upwards_velocity: _MAX_UPWARDS_VELOCITY,
+                terminal_velocity: _TERMINAL_VELOCITY,
+                treadmill_speed: _TREADMILL_SPEED,
+                acceleration: _UPWARDS_ACCELERATION,
+                gravity: _GRAVITY
+              })));
     }
   }
 
-  if( numBlockers == 0 ) return -1.0;
-
-  return blockerDepthSum / float( numBlockers );
-}
-
-float PCF_Filter(sampler2D shadowMap, vec2 uv, float zReceiver, float filterRadius ) {
-  float sum = 0.0;
-  for( int i = 0; i < PCF_NUM_SAMPLES; i ++ ) {
-    float depth = unpackRGBAToDepth( texture2D( shadowMap, uv + poissonDisk[ i ] * filterRadius ) );
-    if( zReceiver <= depth ) sum += 1.0;
-  }
-  for( int i = 0; i < PCF_NUM_SAMPLES; i ++ ) {
-    float depth = unpackRGBAToDepth( texture2D( shadowMap, uv + -poissonDisk[ i ].yx * filterRadius ) );
-    if( zReceiver <= depth ) sum += 1.0;
-  }
-  return sum / ( 2.0 * float( PCF_NUM_SAMPLES ) );
-}
-
-float PCSS ( sampler2D shadowMap, vec4 coords ) {
-  vec2 uv = coords.xy;
-  float zReceiver = coords.z; // Assumed to be eye-space z in this code
-
-  initPoissonSamples( uv );
-  // STEP 1: blocker search
-  float avgBlockerDepth = findBlocker( shadowMap, uv, zReceiver );
-
-  //There are no occluders so early out (this saves filtering)
-  if( avgBlockerDepth == -1.0 ) return 1.0;
-
-  // STEP 2: penumbra size
-  float penumbraRatio = penumbraSize( zReceiver, avgBlockerDepth );
-  float filterRadius = penumbraRatio * LIGHT_SIZE_UV * NEAR_PLANE / zReceiver;
-
-  // STEP 3: filtering
-  //return avgBlockerDepth;
-  return PCF_Filter( shadowMap, uv, zReceiver, filterRadius );
-}
-`;
-
-const _PCSSGetShadow = `
-return PCSS( shadowMap, shadowCoord );
-`;
-
-
-class BasicWorldDemo {
-  constructor() {
-    this._Initialize();
-
-    this._gameStarted = false;
-    document.getElementById('game-menu').onclick = (msg) => this._OnStart(msg);
-  }
-
-  _OnStart(msg) {
-    document.getElementById('game-menu').style.display = 'none';
-    this._gameStarted = true;
-  }
-
-  _Initialize() {
-    // overwrite shadowmap code
-    let shadowCode = THREE.ShaderChunk.shadowmap_pars_fragment;
-
-    shadowCode = shadowCode.replace(
-        '#ifdef USE_SHADOWMAP',
-        '#ifdef USE_SHADOWMAP' +
-        _PCSS
-    );
-
-    shadowCode = shadowCode.replace(
-        '#if defined( SHADOWMAP_TYPE_PCF )',
-        _PCSSGetShadow +
-        '#if defined( SHADOWMAP_TYPE_PCF )'
-    );
-
-    THREE.ShaderChunk.shadowmap_pars_fragment = shadowCode;
-    // renderer
-
-    this.threejs_ = new THREE.WebGLRenderer({
-      antialias: true,
-    });
-    this.threejs_.outputEncoding = THREE.sRGBEncoding;
-    this.threejs_.gammaFactor = 2.2;
-    // this.threejs_.toneMapping = THREE.ReinhardToneMapping;
-    this.threejs_.shadowMap.enabled = true;
-    // this.threejs_.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.threejs_.setPixelRatio(window.devicePixelRatio);
-    this.threejs_.setSize(window.innerWidth, window.innerHeight);
-
-    document.getElementById('container').appendChild(this.threejs_.domElement);
-
-    window.addEventListener('resize', () => {
-      this.OnWindowResize_();
-    }, false);
-
-    const fov = 60;
-    const aspect = 1920 / 1080;
-    const near = 1.0;
-    const far = 20000.0;
-    this.camera_ = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this.camera_.position.set(-5, 5, 10);
-    this.camera_.lookAt(8, 3, 0);
-
-    this.scene_ = new THREE.Scene();
-
-    let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-    light.position.set(60, 100, 10);
-    light.target.position.set(40, 0, 0);
-    light.castShadow = true;
-    light.shadow.bias = -0.001;
-    light.shadow.mapSize.width = 4096;
-    light.shadow.mapSize.height = 4096;
-    light.shadow.camera.far = 200.0;
-    light.shadow.camera.near = 1.0;
-    light.shadow.camera.left = 50;
-    light.shadow.camera.right = -50;
-    light.shadow.camera.top = 50;
-    light.shadow.camera.bottom = -50;
-    this.scene_.add(light);
-
-    light = new THREE.HemisphereLight(0x202020, 0x004080, 0.6);
-    this.scene_.add(light);
-
-    this.scene_.background = new THREE.Color(0x808080);
-    this.scene_.fog = new THREE.FogExp2(0x89b2eb, 0.00125);
-
-    const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(20000, 20000, 10, 10),
-        new THREE.MeshStandardMaterial({
-            color: 0xf6f47f,
-          }));
-    ground.castShadow = false;
-    ground.receiveShadow = true;
-    ground.rotation.x = -Math.PI / 2;
-    this.scene_.add(ground);
-
-    const uniforms = {
-      topColor: { value: new THREE.Color(0x0077FF) },
-      bottomColor: { value: new THREE.Color(0x89b2eb) },
-      offset: { value: 33 },
-      exponent: { value: 0.6 }
+  _CreateGame() {
+    const self = this;
+    const config = {
+        type: Phaser.AUTO,
+        scene: {
+            preload: function() { self._OnPreload(this); },
+            create: function() { self._OnCreate(this); },
+            update: function() { self._OnUpdate(this); },
+        },
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          treadmill_speed: _TREADMILL_SPEED,
+          width: _CONFIG_WIDTH,
+          height: _CONFIG_HEIGHT,
+        }
     };
-    const skyGeo = new THREE.SphereBufferGeometry(1000, 32, 15);
-    const skyMat = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: _VS,
-        fragmentShader: _FS,
-        side: THREE.BackSide,
-    });
-    this.scene_.add(new THREE.Mesh(skyGeo, skyMat));
 
-    this.world_ = new world.WorldManager({scene: this.scene_});
-    this.player_ = new player.Player({scene: this.scene_, world: this.world_});
-    this.background_ = new background.Background({scene: this.scene_});
-
-    this.gameOver_ = false;
-    this.previousRAF_ = null;
-    this.RAF_();
-    this.OnWindowResize_();
+    return new Phaser.Game(config);
   }
 
-  OnWindowResize_() {
-    this.camera_.aspect = window.innerWidth / window.innerHeight;
-    this.camera_.updateProjectionMatrix();
-    this.threejs_.setSize(window.innerWidth, window.innerHeight);
+  _OnPreload(scene) {
+    this._scene = scene;
+    this._scene.load.image('sky', 'assets/sky.png');
+    this._scene.load.image('bird', 'assets/bird.png');
+    this._scene.load.image('bird-colour', 'assets/bird-colour.png');
+    this._scene.load.image('pipe', 'assets/pipe.png');
   }
 
-  RAF_() {
-    requestAnimationFrame((t) => {
-      if (this.previousRAF_ === null) {
-        this.previousRAF_ = t;
+  _OnCreate(scene) {
+    const s = this._scene.add.image(0, 0, 'sky');
+    s.displayOriginX = 0;
+    s.displayOriginY = 0;
+    s.displayWidth = _CONFIG_WIDTH;
+    s.displayHeight = _CONFIG_HEIGHT;
+
+    this._keys = {
+      up: this._scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+      f: this._scene.input.keyboard.addKey('F'),
+      r: this._scene.input.keyboard.addKey('R'),
+    }
+
+    this._keys.f.on('down', function () {
+      if (this._scene.scale.isFullscreen) {
+        this._scene.scale.stopFullscreen();
+      } else {
+        this._scene.scale.startFullscreen();
       }
+    }, this);
 
-      this.RAF_();
+    this._keys.r.on('down', function () {
+      this._Destroy();
+      this._Init();
+    }, this);
 
-      this.Step_((t - this.previousRAF_) / 1000.0);
-      this.threejs_.render(this.scene_, this.camera_);
-      this.previousRAF_ = t;
-    });
+    this._Init();
   }
 
-  Step_(timeElapsed) {
-    if (this.gameOver_ || !this._gameStarted) {
+  _OnUpdate(scene) {
+    if (this._gameOver) {
+      this._DrawStats();
       return;
     }
 
-    this.player_.Update(timeElapsed);
-    this.world_.Update(timeElapsed);
-    this.background_.Update(timeElapsed);
-
-    if (this.player_.gameOver && !this.gameOver_) {
-      this.gameOver_ = true;
-      document.getElementById('game-over').classList.toggle('active');
+    const currentFrame = scene.time.now;
+    if (this._previousFrame == null) {
+      this._previousFrame = currentFrame;
     }
+
+    const timeElapsedInS = Math.min(
+        (currentFrame - this._previousFrame) / 1000.0, 1.0 / 30.0);
+
+    this._UpdateBirds(timeElapsedInS);
+    this._UpdatePipes(timeElapsedInS);
+    this._CheckGameOver();
+    this._DrawStats();
+
+    this._previousFrame = currentFrame;
+  }
+
+  _CheckGameOver() {
+    const results = this._birds.map(b => this._IsBirdOutOfBounds(b));
+
+    this._stats.alive = results.reduce((t, r) => (r ? t: t + 1), 0);
+
+    if (results.every(b => b)) {
+      this._GameOver();
+    }
+  }
+
+  _IsBirdOutOfBounds(bird) {
+    const birdAABB = bird.Bounds;
+    birdAABB.top += 10;
+    birdAABB.bottom -= 10;
+    birdAABB.left += 10;
+    birdAABB.right -= 10;
+
+    if (bird.Dead) {
+      return true;
+    }
+
+    if (birdAABB.bottom >= _GROUND_Y || birdAABB.top <= 0) {
+      bird.Dead = true;
+      return true;
+    }
+
+    for (const p of this._pipes) {
+      if (p.Intersects(birdAABB)) {
+        bird.Dead = true;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  _GetNearestPipes() {
+    let index = 0;
+    if (this._pipes[0].X + this._pipes[0].Width <= _BIRD_POS_X) {
+      index = 1;
+    }
+    return this._pipes.slice(index, 2);
+  }
+
+  _UpdateBirds(timeElapsed) {
+    const params = {
+        timeElapsed: timeElapsed,
+        keys: {up: Phaser.Input.Keyboard.JustDown(this._keys.up)},
+        nearestPipes: this._GetNearestPipes(),
+    };
+
+    for (let b of this._birds) {
+      b.Update(params);
+    }
+  }
+
+  _UpdatePipes(timeElapsed) {
+    const oldPipeX = this._pipes[0].X + this._pipes[0].Width;
+
+    for (const p of this._pipes) {
+      p.Update(timeElapsed);
+    }
+
+    const newPipeX = this._pipes[0].X + this._pipes[0].Width;
+
+    if (oldPipeX > _BIRD_POS_X && newPipeX <= _BIRD_POS_X) {
+      this._stats.score += 1;
+    }
+
+    if ((this._pipes[0].X + this._pipes[0].Width) <= 0) {
+      const p = this._pipes.shift();
+      p.Reset(this._pipes[this._pipes.length - 1].X + _PIPE_SPACING_X);
+      this._pipes.push(p);
+    }
+  }
+
+  _GameOver() {
+    const text = "GAME OVER";
+    const style = {
+      font: "100px Roboto",
+      fill: "#FFFFFF",
+      align: "center",
+      fixedWidth: _CONFIG_WIDTH,
+      shadow: {
+        offsetX: 2,
+        offsetY: 2,
+        color: "#000",
+        blur: 2,
+        fill: true
+      }
+    };
+
+    this._gameOverText = this._scene.add.text(
+        0, _CONFIG_HEIGHT * 0.25, text, style);
+    this._gameOver = true;
+
+    setTimeout(() => {
+      this._Destroy();
+      this._Init();
+    }, 2000);
+  }
+
+  _DrawStats() {
+    function _Line(t, s) {
+      return t + ': ' + s + '\n';
+    }
+
+    const text1 = 'Generation:\n' + 'Score:\n' + 'Alive:\n';
+    this._statsText1.text = text1;
+
+    const text2 = (
+        this._populations[0]._generations + '\n' +
+        this._stats.score + '\n' +
+        this._stats.alive + '\n');
+    this._statsText2.text = text2;
   }
 }
 
-
-let _APP = null;
-
-window.addEventListener('DOMContentLoaded', () => {
-  _APP = new BasicWorldDemo();
-});
+const _GAME = new FlappyBirdGame();
